@@ -15,7 +15,7 @@ chat server in a file called chat server.java.
 Requirements:
 - Accept a socket connection from new clients (up to 100 users) use threads because multiple clients
 - Maintain a list of existing clients' name, state (busy or available), and their socket
-- Show existing clients' name and their state to the new client
+- Show existing clients' name and their state to the new client (broadcast each time updated)
 - Maintain a connection table with the list of peer connections
 - Forward message from one client to another as per the connection table
 
