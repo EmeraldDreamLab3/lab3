@@ -1,82 +1,80 @@
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
 
-/* A Java program for a Client */
-import java.net.*; 
-import java.io.*; 
-  
-public class Client 
-{ 
-/* initialize socket and input output streams */
-private Socket socket = null; 
-private BufferedReader input = null; 
-private DataOutputStream out = null;
- 
-private DataInputStream in = null;
+// Written by Dennis Perea and Christopher Walls
 
-/* constructor to put ip address and port */
-public Client(String address, int port) 
-{ 
-	/* establish a connection */
-	try {
-		socket = new Socket(address, port); 
-	} catch(Exception i) {
-		System.out.println("Client: Error in IP or port");
-		System.exit(0);
-    	}
-	System.out.println("Client: Connected");
+public class chat_client implements Runnable{
 
-	try { 
-		/* takes input from terminal */
-		input = new BufferedReader(new InputStreamReader(System.in));
-		/* takes input from the server socket */
-		in = new DataInputStream(
-			new BufferedInputStream(socket.getInputStream())); 
+    public Socket clientSock = null;
+    HelloState state = null;
+    private BufferedReader in = null;
+    private DataInputStream input = null;
+    private DataOutputStream output = null;
 
-		/* sends output to the socket */
-		out = new DataOutputStream(socket.getOutputStream()); 
+    /* default constructor */
+    public chat_client(Socket clientSocket, HelloState state){
+        this.clientSock = clientSocket;
+        this.state = state;
+    }
 
-	} catch(IOException i) { 
-		System.out.println(i); 
-	} 
-	
-	/* string to read message from input */
-	String line = ""; 
-	
-	/* keep reading until "Over" is input */
-	while (!line.equals("Over")) { 
-		try {
-			line = input.readLine(); 
-			out.writeUTF(line);
-			if (line.equals("Over")) {
-				continue; }
+    /* constructor to put ip address and port */
+    public chat_client (String address, int port){
+        /* make connection */
+        try {
+            clientSock = new Socket (address, port);
+        } catch (Exception i) {
+            System.out.println("Error in IP or port");
+            System.exit(1);
+        }
 
-			line = in.readUTF();
-			System.out.println("Server: " +line);
-		} catch(Exception i) {
-			System.out.println(i);
-		}
-	} 
-	
-	/* close the connection */
-	try { 
-		System.out.println("Client: closing connection");
-		socket.close(); 
-		in.close();
+        // try{
+        //     in = new BufferedReader(new InputStreamReader(System.in));
+        //     input = new DataInputStream(clientSock.getInputStream());
+        //     output = new DataOutputStream(clientSock.getOutputStream());
+        // } catch (IOException i) {
+        //     System.out.println(i);
+        // }
 
-		input.close(); 
-		out.close(); 
-	} catch(Exception i) {
-		System.out.println(i);  
-	} 
-}
+        try {
+            
+            /* establish means of communicating between server/client & to console */
+            in = new BufferedReader(new InputStreamReader(System.in));
+            input = new DataInputStream(clientSock.getInputStream());
+            output = new DataOutputStream(clientSock.getOutputStream());
+            // System.out.println("Enter client name:");
+            // server asks for client to enter name
+            System.out.println(in.readUTF());
+            // user responds with client name
+            // server greets user and prompts which client to connect to
 
-public static void main(String args[]) 
-{ 
-	if (args.length < 2) {
-		System.out.println("Client usage: java Client #IP_address #port_number");
-	}
-	else {
+            // UNDER THIS LINE IDK IF IT WORKS
+            name = keyboard.nextLine();
+            output.writeUTF(name);
+            System.out.println(input.readUTF());
+
+
+            // for(int i = countdown;i>0;--i){
+            //     output.writeUTF("Closing in " + i +"...");
+            //     Thread.sleep(1000);
+            // }
+            output.writeUTF("Good bye\n");
+            output.close();
+            input.close();
+        }catch(EOFException e){
+            System.out.println("Server closed connection");
+        }
+        catch (Exception e){
+            System.out.println("Client"+e.getMessage());
+        }
+    }
+    public static void main(String args[]) 
+    { 
+	    if (args.length < 2) {
+	        System.out.println("Client usage: java Client #IP_address #port_number");
+	    } else {
 		Client client = new Client(args[0], Integer.parseInt(args[1])); 
-	}
-} 
+	    }
+    }
 
 }
