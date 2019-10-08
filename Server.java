@@ -55,7 +55,8 @@ class ClientHandler extends Thread
 	final DataOutputStream dos; 
     final Socket s; 
     // bool to check if user name was set
-    boolean setUserName;
+	boolean setUserName;
+	// bool to check if target user to chat to has been set to
     String userName;
     
 	
@@ -77,8 +78,7 @@ class ClientHandler extends Thread
 		while (true) 
 		{ 
             try { 
-                // Ask user what he wants 
-				
+				//  !!If user has not set their user name yet, set it
 				if (setUserName == false) {
 					dos.writeUTF("Set your user name:");
 
@@ -89,31 +89,32 @@ class ClientHandler extends Thread
 					dos.writeUTF("You set your username to:" + userName);
 					setUserName = true;
 
-				} else if (setUserName == true) {
-					dos.writeUTF("\nSelect an Option: [UserName | Exit]..\n"+ 
+				}
+				
+				//  !!If user has not designated who they want to talk to, set their target user
+				if (setTargetUser == false) {
+					dos.writeUTF("\nSelect an Option: [Speak to User | Exit]..\n"+ 
 								"Type to chat."); 
 					
 
 					// receive the answer from client 
 					received = dis.readUTF(); 
 
-					// exit closes client
-					if(received.equals("Exit")) 
-					{ 
-						System.out.println("Client " + this.s + " sends exit..."); 
-						System.out.println("Closing this connection."); 
-						this.s.close(); 
-						System.out.println("Connection closed"); 
-						break; 
-					} 
-
 					switch (received) {     
-						case "UserName" :
-							dos.writeUTF("Your username is:" + userName);
+						case "Speak to User" :
+							dos.writeUTF("Please list who you wish to speak to:");
+							// dis.readUTF() <-- Make sure to have client write to unblock this
+							setTargetUser = true;
 							break;
 						
+						case "Exit":
+							System.out.println("Client " + this.s + " sends exit..."); 
+							System.out.println("Closing this connection."); 
+							this.s.close(); 
+							System.out.println("Connection closed"); 
+							break; 
 						default: 
-							dos.writeUTF("Typing......."); 
+							dos.writeUTF("Invalid Option"); 
 							break; 
 					}
 				}
