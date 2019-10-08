@@ -1,82 +1,54 @@
-
-/* A Java program for a Client */
-import java.net.*; 
 import java.io.*; 
-  
+import java.net.*; 
+import java.util.Scanner; 
+
+// Client class 
 public class Client 
 { 
-/* initialize socket and input output streams */
-private Socket socket = null; 
-private BufferedReader input = null; 
-private DataOutputStream out = null;
- 
-private DataInputStream in = null;
-
-/* constructor to put ip address and port */
-public Client(String address, int port) 
-{ 
-	/* establish a connection */
-	try {
-		socket = new Socket(address, port); 
-	} catch(Exception i) {
-		System.out.println("Client: Error in IP or port");
-		System.exit(0);
-    	}
-	System.out.println("Client: Connected");
-
-	try { 
-		/* takes input from terminal */
-		input = new BufferedReader(new InputStreamReader(System.in));
-		/* takes input from the server socket */
-		in = new DataInputStream(
-			new BufferedInputStream(socket.getInputStream())); 
-
-		/* sends output to the socket */
-		out = new DataOutputStream(socket.getOutputStream()); 
-
-	} catch(IOException i) { 
-		System.out.println(i); 
-	} 
+	public static void main(String[] args) throws IOException 
+	{ 
+		try
+		{ 
+			Scanner scn = new Scanner(System.in); 
+			
+			// This is the Ip the cleint is connecting to
+			InetAddress ip = InetAddress.getByName("localhost"); 
 	
-	/* string to read message from input */
-	String line = ""; 
+			//Establish Socket
+			Socket s = new Socket(ip, 5056); 
 	
-	/* keep reading until "Over" is input */
-	while (!line.equals("Over")) { 
-		try {
-			line = input.readLine(); 
-			out.writeUTF(line);
-			if (line.equals("Over")) {
-				continue; }
-
-			line = in.readUTF();
-			System.out.println("Server: " +line);
-		} catch(Exception i) {
-			System.out.println(i);
-		}
-	} 
+			// Input and Outputstream of the socket
+			DataInputStream dis = new DataInputStream(s.getInputStream()); 
+			DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
 	
-	/* close the connection */
-	try { 
-		System.out.println("Client: closing connection");
-		socket.close(); 
-		in.close();
-
-		input.close(); 
-		out.close(); 
-	} catch(Exception i) {
-		System.out.println(i);  
+			// Communicating to server from client
+			while (true) 
+			{ 
+                // v This line should constantly read the server's output
+				System.out.println(dis.readUTF()); 
+				String tosend = scn.nextLine(); 
+				dos.writeUTF(tosend); 
+				
+				// If client sends exit, close connection 
+				if(tosend.equals("Exit")) 
+				{ 
+					System.out.println("Closing this connection : " + s); 
+					s.close(); 
+					System.out.println("Connection closed"); 
+					break; 
+				} 
+				
+				// v So the line is updated, so reread 
+				String received = dis.readUTF(); 
+				System.out.println(received); 
+			} 
+			
+			// Close everything when done
+			scn.close(); 
+			dis.close(); 
+			dos.close(); 
+		} catch(Exception e){ 
+			e.printStackTrace(); 
+		} 
 	} 
-}
-
-public static void main(String args[]) 
-{ 
-	if (args.length < 2) {
-		System.out.println("Client usage: java Client #IP_address #port_number");
-	}
-	else {
-		Client client = new Client(args[0], Integer.parseInt(args[1])); 
-	}
 } 
-
-}
