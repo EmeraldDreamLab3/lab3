@@ -20,22 +20,26 @@ public class Server
 			
 			try
 			{ 
+				if(listOfUsers.isEmpty()) {
+					System.out.println("Waiting for a client ...");
+				}
 				// socket object to receive incoming client requests 
 				s = ss.accept(); 
-				System.out.println("A new client is connected : " + s); 
+				//System.out.println("A new client is connected : " + s); 
 				
 				// obtaining input and out streams 
 				DataInputStream dis = new DataInputStream(s.getInputStream()); 
 				DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
 				
-				System.out.println("Assigning new thread for this client"); 
+				//System.out.println("Assigning new thread for this client"); 
 
 				// create a new thread object 
 				ClientHandler t = new ClientHandler(s, dis, dos); 
                 // add client to list of clients
-                listOfUsers.add(t);
+				listOfUsers.add(t);
+				System.out.println("List of clients and states");
                 for (ClientHandler e : listOfUsers) {
-                    System.out.print("Online:" + e.getUserName() +", ");
+                    System.out.println(e.getUserName() +"\t"+e.getState());
                 }
 				// Invoking the start() method 
                 t.start();
@@ -57,6 +61,7 @@ class ClientHandler extends Thread
     // bool to check if user name was set
 	boolean setUserName;
 	// bool to check if target user to chat to has been set to
+	boolean setTargetUser;
     String userName;
     
 	
@@ -67,7 +72,8 @@ class ClientHandler extends Thread
 		this.s = s; 
 		this.dis = dis; 
         this.dos = dos; 
-        setUserName = false;
+		setUserName = false;
+		setTargetUser = false;
 	} 
 
 	@Override
@@ -121,18 +127,17 @@ class ClientHandler extends Thread
 
             } catch (IOException e) { 
                 e.printStackTrace(); 
-            } 
-        } 
-
-		try
-		{ 
-			// closing resources 
-			this.dis.close(); 
-			this.dos.close(); 
-			
-		}catch(IOException e){ 
-			e.printStackTrace(); 
-		} 
+			} 
+			try
+			{ 
+				// closing resources 
+				this.dis.close(); 
+				this.dos.close(); 
+				
+			}catch(IOException e){ 
+				e.printStackTrace(); 
+			}
+        }  
     } 
     
     public String getUserName() {
