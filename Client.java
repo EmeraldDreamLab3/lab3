@@ -24,7 +24,9 @@ public class Client
 			// Communicating to server from client
 			while (true) 
 			{ 
-                // v This line should constantly read the server's output
+				// v This line should constantly read the server's output
+				System.out.println("[START WHILE]");
+
 				System.out.println(dis.readUTF()); 
 				String tosend = scn.nextLine(); 
 				dos.writeUTF(tosend); 

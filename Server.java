@@ -9,7 +9,8 @@ public class Server
 	public static void main(String[] args) throws IOException 
 	{ 
 		// Port the server is listening to 
-        ServerSocket ss = new ServerSocket(5056); 
+		ServerSocket ss = new ServerSocket(5056); 
+		System.out.println("Server started...");
 		// List of users
 
 		/* **
@@ -22,7 +23,10 @@ public class Server
 		while (true) 
 		{ 
 			Socket s = null; 
-			//System.out.println("Waiting for a client ...");
+			System.out.println("Waiting for a client...");
+			/* **
+			** TODO: constantly loop through peer connection list to check for updates, when its different send it out
+			** */
 			try
 			{ 
 				// socket object to receive incoming client requests 
@@ -81,6 +85,7 @@ class ClientHandler extends Thread
 	// bool to check if target user to chat to has been set to
 	boolean setTargetUser;
 	String userName;
+	String targetUser;
 	
 	/* **
 		** TODO: to store name, STATE, and socket
@@ -103,7 +108,7 @@ class ClientHandler extends Thread
 	{ 
 		String received;
 		// made a temp to see what was blocking user from writing in switch statement after Speak to User 
-		String temp;
+		String temp = "";
 		String toreturn; 
 		while (true) 
 		{ 
@@ -123,45 +128,68 @@ class ClientHandler extends Thread
 				}
 				
 				//  !!If user has not designated who they want to talk to, set their target user
-				if (setTargetUser == false) {
-					dos.writeUTF("Select an Option: [Speak to User | Exit]..\n"+ 
-								"Type to chat."); 
-					
-
-					// receive the answer from client 
-					received = dis.readUTF(); 
-					temp = received;
-
-					//add to switch statement to continue unless exit
-					
-					switch (temp) {     
-						case "Speak to User" :
-							dos.writeUTF("Please list who you wish to speak to:");
-							// dis.readUTF() <-- Make sure to have client write to unblock this
-							received = dis.readUTF();
-							setTargetUser = true;
-							break;
+				while(temp!="Speak to User")
+				{
+					if (setTargetUser == false) {
+						dos.writeUTF("Select an Option: [Speak to User | Exit]..\n"+ 
+									"Type to chat."); 
 						
-						case "Exit":
-							System.out.println("Client " + this.s + " sends exit..."); 
-							System.out.println("Closing this connection."); 
-							this.s.close(); 
-							this.dis.close();
-							this.dos.close();
-							System.out.println("Connection closed"); 
-							Thread.sleep(20000); 
 
-							/* **
-							** TODO: server needs to update client information and broadcast peer connection table 
-							** */
+						// receive the answer from client 
+						received = dis.readUTF(); 
+						temp = received;
 
-							// we only want this thread to close It doesnt not do this yet
-							break; 
-						default: 
-							dos.writeUTF("Invalid Option"); 
-							break; 
-					}
-				}
+						//add to switch statement to continue unless exit
+						/*
+						** TODO add case where another user can connect anytime and they can accept/decline
+						*/
+							switch (temp) {     
+								case "Speak to User" :
+									dos.writeUTF("Please list who you wish to speak to:");
+									//dos.writeUTF(myServer.stringList());
+									// dis.readUTF() <-- Make sure to have client write to unblock this
+									received = dis.readUTF();
+									targetUser = received;
+									setTargetUser = true;
+									break;
+							
+								case "Exit":
+									System.out.println("Client " + this.s + " sends exit..."); 
+									System.out.println("Closing this connection."); 
+									this.s.close(); 
+									this.dis.close();
+									this.dos.close();
+									System.out.println("Connection closed"); 
+									Thread.sleep(20000); 
+
+									/* **
+									** TODO: server needs to update client information and broadcast peer connection table 
+									** */
+
+									// we only want this thread to close It doesnt not do this yet
+									break; 
+								default: 
+									dos.writeUTF("Invalid Option"); 
+									break; 
+							}//end switch
+					}//end if
+				}//end while
+
+				/* **
+				** TODO connect users to eachother via input
+				** */
+				//clienthandler ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos) comparison userName(str) & received
+				//arraylist listOfUsers = new ArrayList<ClientHandler>(); use myServer object to access helper methods
+				/* pseudo code
+				we have the userName of the ClientHandler we want to connect to
+				1. check myServer.ArrayList<ClientHandler>.getUserName() == received
+				
+				1. make method to grab ArrayList<ClientHandler>
+				2. while loop to check for threads to send to client, and server should forward between them
+
+				not finished here clearly, am brain dead
+				*/
+				System.out.println("You are connected to " + targetUser);
 
 			}catch(InterruptedException e){
 				//catch block for thread sleep()
