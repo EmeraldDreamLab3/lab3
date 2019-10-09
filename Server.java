@@ -6,26 +6,24 @@ import java.net.*;
 // Server class 
 public class Server 
 { 
+	static ArrayList<ClientHandler> listOfUsers;
 	public static void main(String[] args) throws IOException 
 	{ 
 		// Port the server is listening to 
         ServerSocket ss = new ServerSocket(5056); 
         // List of users
-        ArrayList<ClientHandler> listOfUsers = new ArrayList<ClientHandler>();
+        listOfUsers = new ArrayList<ClientHandler>();
         
 		// Infinite loop bc clients are connecting
 		while (true) 
 		{ 
 			Socket s = null; 
-			
+			//System.out.println("Waiting for a client ...");
 			try
 			{ 
-				if(listOfUsers.isEmpty()) {
-					System.out.println("Waiting for a client ...");
-				}
 				// socket object to receive incoming client requests 
 				s = ss.accept(); 
-				//System.out.println("A new client is connected : " + s); 
+				System.out.println("Client accepted"); 
 				
 				// obtaining input and out streams 
 				DataInputStream dis = new DataInputStream(s.getInputStream()); 
@@ -37,24 +35,38 @@ public class Server
 				ClientHandler t = new ClientHandler(s, dis, dos); 
                 // add client to list of clients
 				listOfUsers.add(t);
-				System.out.println("List of clients and states");
-                for (ClientHandler e : listOfUsers) {
-                    System.out.println(e.getUserName() +"\t"+e.getState());
-                }
 				// Invoking the start() method 
-                t.start();
+				t.start();
 			} 
 			catch (Exception e){ 
 				s.close(); 
 				e.printStackTrace(); 
 			} 
 		} 
+	}
+	public ArrayList<ClientHandler> getList() {
+		return listOfUsers;
 	} 
+
+	public void printList() {
+		System.out.println("List of clients and states");
+		for (ClientHandler e : listOfUsers) {
+			System.out.println(e.getUserName() +"\t"+e.getState());
+		}
+	}
+	public String stringList() {
+		String s = "List of clients & states\n";
+		for (ClientHandler e : listOfUsers) {
+			s = s + e.getUserName() +"\t"+e.getState()+"\n";
+		}
+		return s;
+	}
 } 
 
 // ClientHandler class 
 class ClientHandler extends Thread 
 { 
+	Server myServer = new Server();
 	final DataInputStream dis; 
 	final DataOutputStream dos; 
     final Socket s; 
@@ -86,20 +98,21 @@ class ClientHandler extends Thread
             try { 
 				//  !!If user has not set their user name yet, set it
 				if (setUserName == false) {
-					dos.writeUTF("Set your user name:");
+					dos.writeUTF("Enter client name: ");
 
 					// receive the answer from client 
 					received = dis.readUTF(); 
-
 					userName = received;
-					dos.writeUTF("You set your username to:" + userName);
+					myServer.printList();
+					//dos.writeUTF("You set your username to:" + userName);
 					setUserName = true;
-
+					//send list to users once a connection is established
+					dos.writeUTF(myServer.stringList());
 				}
 				
 				//  !!If user has not designated who they want to talk to, set their target user
 				if (setTargetUser == false) {
-					dos.writeUTF("\nSelect an Option: [Speak to User | Exit]..\n"+ 
+					dos.writeUTF("Select an Option: [Speak to User | Exit]..\n"+ 
 								"Type to chat."); 
 					
 
