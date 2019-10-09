@@ -20,7 +20,7 @@ public class Client
 			// Input and Outputstream of the socket
 			DataInputStream dis = new DataInputStream(s.getInputStream()); 
 			DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
-	
+			System.out.println("[TRY]");
 			// Communicating to server from client
 			while (true) 
 			{ 
@@ -29,19 +29,26 @@ public class Client
 				String tosend = scn.nextLine(); 
 				dos.writeUTF(tosend); 
 				
+				System.out.println("[WHILE]");
 				// If client sends exit, close connection 
 				if(tosend.equals("Exit")) 
 				{ 
 					System.out.println("Closing this connection : " + s); 
 					s.close(); 
 					System.out.println("Connection closed"); 
+					System.out.println("[EXIT]");
+
 					break; 
 				} 
 				
 				// v So the line is updated, so reread 
 				String received = dis.readUTF(); 
 				System.out.println(received); 
+				System.out.println("[END WHILE]");
+
 			} 
+			System.out.println("[OUT TRUE]");
+
 			
 			// Close everything when done
 			scn.close(); 

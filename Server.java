@@ -1,5 +1,4 @@
 import java.io.*; 
-import java.text.*; 
 import java.util.*; 
 import java.net.*; 
 
@@ -11,7 +10,12 @@ public class Server
 	{ 
 		// Port the server is listening to 
         ServerSocket ss = new ServerSocket(5056); 
-        // List of users
+		// List of users
+
+		/* **
+		** TODO: CHECK up to 100 users 
+		** */
+
         listOfUsers = new ArrayList<ClientHandler>();
         
 		// Infinite loop bc clients are connecting
@@ -39,6 +43,7 @@ public class Server
 				t.start();
 			} 
 			catch (Exception e){ 
+				ss.close();
 				s.close(); 
 				e.printStackTrace(); 
 			} 
@@ -66,6 +71,7 @@ public class Server
 // ClientHandler class 
 class ClientHandler extends Thread 
 { 
+	// instance of server to access ArrayList
 	Server myServer = new Server();
 	final DataInputStream dis; 
 	final DataOutputStream dos; 
@@ -74,7 +80,11 @@ class ClientHandler extends Thread
 	boolean setUserName;
 	// bool to check if target user to chat to has been set to
 	boolean setTargetUser;
-    String userName;
+	String userName;
+	
+	/* **
+		** TODO: to store name, STATE, and socket
+		** */
     
 	
 
@@ -91,7 +101,9 @@ class ClientHandler extends Thread
 	@Override
 	public void run() 
 	{ 
-		String received; 
+		String received;
+		// made a temp to see what was blocking user from writing in switch statement after Speak to User 
+		String temp;
 		String toreturn; 
 		while (true) 
 		{ 
@@ -103,10 +115,10 @@ class ClientHandler extends Thread
 					// receive the answer from client 
 					received = dis.readUTF(); 
 					userName = received;
-					myServer.printList();
 					//dos.writeUTF("You set your username to:" + userName);
 					setUserName = true;
 					//send list to users once a connection is established
+					myServer.printList();
 					dos.writeUTF(myServer.stringList());
 				}
 				
@@ -118,11 +130,15 @@ class ClientHandler extends Thread
 
 					// receive the answer from client 
 					received = dis.readUTF(); 
+					temp = received;
 
-					switch (received) {     
+					//add to switch statement to continue unless exit
+					
+					switch (temp) {     
 						case "Speak to User" :
 							dos.writeUTF("Please list who you wish to speak to:");
 							// dis.readUTF() <-- Make sure to have client write to unblock this
+							received = dis.readUTF();
 							setTargetUser = true;
 							break;
 						
@@ -130,7 +146,16 @@ class ClientHandler extends Thread
 							System.out.println("Client " + this.s + " sends exit..."); 
 							System.out.println("Closing this connection."); 
 							this.s.close(); 
+							this.dis.close();
+							this.dos.close();
 							System.out.println("Connection closed"); 
+							Thread.sleep(20000); 
+
+							/* **
+							** TODO: server needs to update client information and broadcast peer connection table 
+							** */
+
+							// we only want this thread to close It doesnt not do this yet
 							break; 
 						default: 
 							dos.writeUTF("Invalid Option"); 
@@ -138,12 +163,18 @@ class ClientHandler extends Thread
 					}
 				}
 
-            } catch (IOException e) { 
-                e.printStackTrace(); 
+			}catch(InterruptedException e){
+				//catch block for thread sleep()
+				System.out.println("Shutdown timeout interrupted, shutting down immediately");
+			}catch (IOException e) { 
+				e.printStackTrace(); 
+				System.out.println("Shutting down");
+				//actually exit instead of infinite loop
+				System.exit(0);
 			} 
 			try
 			{ 
-				// closing resources 
+				// closing resources
 				this.dis.close(); 
 				this.dos.close(); 
 				
