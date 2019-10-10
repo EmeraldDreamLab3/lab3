@@ -20,14 +20,16 @@ public class Client
 			// Input and Outputstream of the socket
 			DataInputStream dis = new DataInputStream(s.getInputStream()); 
 			DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
+			String received;
 			System.out.println("[TRY]");
 			// Communicating to server from client
 			while (true) 
 			{ 
 				// v This line should constantly read the server's output
 				System.out.println("[START WHILE]");
-
-				System.out.println(dis.readUTF()); 
+				received = dis.readUTF();
+				System.out.println(received); 
+				System.out.println("[Start Read]");
 				String tosend = scn.nextLine(); 
 				dos.writeUTF(tosend); 
 				
@@ -44,7 +46,7 @@ public class Client
 				} 
 				
 				// v So the line is updated, so reread 
-				String received = dis.readUTF(); 
+				received = dis.readUTF(); 
 				System.out.println(received); 
 				System.out.println("[END WHILE]");
 

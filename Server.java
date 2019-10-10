@@ -131,8 +131,7 @@ class ClientHandler extends Thread
 				while(temp!="Speak to User")
 				{
 					if (setTargetUser == false) {
-						dos.writeUTF("Select an Option: [Speak to User | Exit]..\n"+ 
-									"Type to chat."); 
+						dos.writeUTF("Select an Option: [Speak to User | Exit]..\n"); 
 						
 
 						// receive the answer from client 
