@@ -45,6 +45,9 @@ public class Client
 					break; 
 				} 
 				
+				/* NOTICE ME ALEXXXXXXXXXXXXXXXXXXXXXXX */
+				/* Needs a line that lets user type again to server!!!!!! */
+				
 				// v So the line is updated, so reread 
 				received = dis.readUTF(); 
 				System.out.println(received); 

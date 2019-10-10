@@ -146,7 +146,7 @@ class ClientHandler extends Thread
 								case "Speak to User" :
 									dos.writeUTF("Please list who you wish to speak to:");
 									//dos.writeUTF(myServer.stringList());
-									// dis.readUTF() <-- Make sure to have client write to unblock this
+									//dis.readUTF() <-- Make sure to have client write to unblock this
 									received = dis.readUTF();
 									targetUser = received;
 									setTargetUser = true;
