@@ -11,17 +11,16 @@ public class Server
 	{ 
 		if (args.length < 1) {
 			System.out.println("Server usage: java Server #port_number");
-		} else {
-			// Port the server is listening to 
-			int port = Integer.parseInt(args[0]);
-			ServerSocket ss = null;
-			try {
-				ss = new ServerSocket(port);
-			} catch(Exception i) {
-				System.out.println("Error in port");
-				System.exit(0);
-			}
-		}		
+		}
+
+		// Port the server is listening to 
+		int port = Integer.parseInt(args[0]);
+		ServerSocket ss = null;
+		try {
+			ss = new ServerSocket(port); 
+		} catch (Exception e) {
+			System.out.println("Error in port");
+		}
 
 		System.out.println("Server started...");
 		// List of users
@@ -82,16 +81,6 @@ public class Server
 		}
 		return s;
 	}
-
-	public void startServer(int port) {
-		/* starts server and waits for a connection */
-		try { 
-			server = new ServerSocket(port); 
-		} catch(Exception i) {
-			System.out.println("Error in port");
-			System.exit(0);
-		}
-	}
 } 
 
 // ClientHandler class 
@@ -133,7 +122,7 @@ class ClientHandler extends Thread
 		String received;
 		// made a temp to see what was blocking user from writing in switch statement after Speak to User 
 		String temp = "";
-
+		String toreturn; 
 		while (true) 
 		{ 
             try { 
