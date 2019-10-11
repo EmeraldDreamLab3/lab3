@@ -6,6 +6,7 @@ import java.net.*;
 public class Server 
 { 
 	static ArrayList<ClientHandler> listOfUsers;
+	final static int MAX_CLIENTS = 100;
 	public static void main(String[] args) throws IOException 
 	{ 
 		// Port the server is listening to 
@@ -13,11 +14,7 @@ public class Server
 		System.out.println("Server started...");
 		// List of users
 
-		/* **
-		** TODO: CHECK up to 100 users 
-		** */
-
-        listOfUsers = new ArrayList<ClientHandler>();
+        listOfUsers = new ArrayList<ClientHandler>(MAX_CLIENTS);
         
 		// Infinite loop bc clients are connecting
 		while (true) 
@@ -27,22 +24,25 @@ public class Server
 			/* **
 			** TODO: constantly loop through peer connection list to check for updates, when its different send it out
 			** */
+
 			try
 			{ 
 				// socket object to receive incoming client requests 
+				if (listOfUsers.size() >= 100) {
+					System.out.println("Maximum number of clients connected.");
+				}
 				s = ss.accept(); 
 				System.out.println("Client accepted"); 
 				
 				// obtaining input and out streams 
 				DataInputStream dis = new DataInputStream(s.getInputStream()); 
 				DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
-				
-				//System.out.println("Assigning new thread for this client"); 
 
 				// create a new thread object 
 				ClientHandler t = new ClientHandler(s, dis, dos); 
                 // add client to list of clients
 				listOfUsers.add(t);
+				
 				// Invoking the start() method 
 				t.start();
 			} 
@@ -84,15 +84,17 @@ class ClientHandler extends Thread
 	boolean setUserName;
 	// bool to check if target user to chat to has been set to
 	boolean setTargetUser;
+
+	//could do state as boolean
+	String state = "free";
 	String userName;
 	String targetUser;
-	
-	/* **
-		** TODO: to store name, STATE, and socket
-		** */
-    
-	
 
+	// peer connection list
+	HashMap<ClientHandler, ClientHandler> pcl = new HashMap<>();
+	// HashMap<String, DataOutputStream> connOut = new HashMap<>();
+	// HashMap<String, DataInputStream> connIn = new HashMap<>();
+	
 	// Constructor 
 	public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos) 
 	{ 
@@ -131,9 +133,7 @@ class ClientHandler extends Thread
 				while(temp!="Speak to User")
 				{
 					if (setTargetUser == false) {
-						dos.writeUTF("Select an Option: [Speak to User | Exit]..\n"); 
-						
-
+						dos.writeUTF("Select an Option: [Speak to User | Exit].."); 
 						// receive the answer from client 
 						received = dis.readUTF(); 
 						temp = received;
@@ -150,6 +150,39 @@ class ClientHandler extends Thread
 									received = dis.readUTF();
 									targetUser = received;
 									setTargetUser = true;
+									// new if branch to search
+
+									//should be a smaller try block
+									for (ClientHandler e : myServer.listOfUsers) {
+										if(e.getUserName().equalsIgnoreCase(targetUser)) {
+											if (e.get_State().equalsIgnoreCase("free")) {
+												// then they can connect!!!!
+												pcl.put(this, e);
+												pcl.put(e, this);
+												//update targetUser
+												e.setState("busy");
+												this.setState("busy");
+												dos.writeUTF("You are connected to " + targetUser);
+											} else {
+												//dos.writeUTF("User is busy.");
+											}
+										} else {
+											//dos.writeUTF("User is not connected to the server.");
+										}
+									}
+
+									// add some breaks to this for they can leave eternal doom
+									while(pcl.containsKey(this)) {
+										// constantly read client
+										if (dis.available() > 0) {
+											pcl.get(this).dos.writeUTF(dis.readUTF());
+										}
+										if (pcl.get(this).dis.available() > 0) {
+											dos.writeUTF(pcl.get(this).dis.readUTF());
+										}
+									}
+									
+									
 									break;
 							
 								case "Exit":
@@ -213,5 +246,18 @@ class ClientHandler extends Thread
     
     public String getUserName() {
         return userName;
-    }
+	}
+
+	public String get_State() {
+		if(this.state.equals("free")) {
+			return "free";
+		}
+		return "busy";
+	}
+	public void setState(String s) {
+		this.state = s;
+	}
+	public String toString() {
+		return getUserName() + "\t" + get_State();
+	}
 } 
