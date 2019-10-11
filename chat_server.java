@@ -111,11 +111,22 @@ class ClientHandler extends Thread
 				while(temp!="Exit")
 				{
 					if (setTargetUser == false) {
+						synchronized(this) {
+
                         dos.writeUTF("Connect to which client?");
                         // receive the answer from client 
                         received = dis.readUTF();
-                        targetUser = received;
-                        setTargetUser = true;
+						targetUser = received;
+
+						// if (targetUser.equalsIgnoreCase("y")) {
+						// 	this.chatRoom();
+						// } else if (targetUser.equalsIgnoreCase("n")) {
+						// 	// ask what they want to connect to then
+						// 	dos.writeUTF("Connect to which client?");
+						// 	received = dis.readUTF();
+						// 	targetUser = received;
+						// }
+						setTargetUser = true;
                         // new if branch to search
                         boolean userFound = false;
                         while(!userFound)
@@ -123,17 +134,22 @@ class ClientHandler extends Thread
                             //find user they want to connect to and check for name, state
                             for (ClientHandler e : myServer.listOfUsers) {
                                 if(e.getUserName().equalsIgnoreCase(targetUser)) {
-                                    userFound = true;
+									userFound = true;
                                     if (e.get_State().equalsIgnoreCase("free")) {
-										e.dos.flush();
-                                        e.dos.writeUTF("Received request from " + userName +"\nConnect? 'y' or 'n'");
+										// System.out.println("flush time");
+										// e.dos.flush();
+										// System.out.println("wait time");
+										// e.dis.wait();
+										// System.out.println("wait good!");
+										e.dos.writeUTF("Received request from " + userName +"\nConnect? 'y' or 'n'");
+										e.dis.notify();
                                         //ask user to connect
                                         if(e.dis.readUTF().equalsIgnoreCase("y")) {
                                             // We are allowed to connect.
                                             pcl.put(this, e);
-                                            pcl.put(e, this);
+											pcl.put(e, this);
                                             //update targetUser
-                                            e.setState("busy");
+											e.setState("busy");
                                             this.setState("busy");
                                             dos.writeUTF("You are connected to " + targetUser);
                                             this.chatRoom();
@@ -147,7 +163,8 @@ class ClientHandler extends Thread
                             dos.writeUTF("User cannot be found");
                             break;
                         }						
-                }
+				}
+				}//end synchronized block
             }
 			// }catch(InterruptedException e){
 			// 	//catch block for thread sleep()

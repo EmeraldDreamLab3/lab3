@@ -29,6 +29,18 @@ public class chat_client
 					received = dis.readUTF();
 					System.out.println(received);
 				} while (dis.available() > 0);
+				boolean ans = false;
+				while(ans) {
+					if (dis.available() > 0)
+					{
+						dos.flush();
+						received = dis.readUTF();
+						System.out.println(received);
+					} else {
+						String tosend = scn.nextLine(); 
+						dos.writeUTF(tosend); 
+					}
+				}
                 String tosend = scn.nextLine(); 
                 dos.writeUTF(tosend); 
                 // If client sends exit, close connection 
