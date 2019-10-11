@@ -32,9 +32,6 @@ public class Server
 		{ 
 			Socket s = null; 
 			System.out.println("Waiting for a client...");
-			/* **
-			** TODO: constantly loop through peer connection list to check for updates, when its different send it out
-			** */
 
 			try
 			{ 
@@ -150,9 +147,6 @@ class ClientHandler extends Thread
 						temp = received;
 
 						//add to switch statement to continue unless exit
-						/*
-						** TODO add case where another user can connect anytime and they can accept/decline
-						*/
 							switch (temp) {     
 								case "Speak to User" :
 									dos.writeUTF("Please list who you wish to speak to:");
@@ -205,10 +199,6 @@ class ClientHandler extends Thread
 									System.out.println("Connection closed"); 
 									Thread.sleep(20000); 
 
-									/* **
-									** TODO: server needs to update client information and broadcast peer connection table 
-									** */
-
 									// we only want this thread to close It doesnt not do this yet
 									break; 
 								default: 
@@ -217,21 +207,6 @@ class ClientHandler extends Thread
 							}//end switch
 					}//end if
 				}//end while
-
-				/* **
-				** TODO connect users to eachother via input
-				** */
-				//clienthandler ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos) comparison userName(str) & received
-				//arraylist listOfUsers = new ArrayList<ClientHandler>(); use myServer object to access helper methods
-				/* pseudo code
-				we have the userName of the ClientHandler we want to connect to
-				1. check myServer.ArrayList<ClientHandler>.getUserName() == received
-				
-				1. make method to grab ArrayList<ClientHandler>
-				2. while loop to check for threads to send to client, and server should forward between them
-
-				not finished here clearly, am brain dead
-				*/
 				System.out.println("You are connected to " + targetUser);
 
 			}catch(InterruptedException e){

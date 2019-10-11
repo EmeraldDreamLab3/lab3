@@ -25,36 +25,21 @@ public class chat_client
 			while (true) 
 			{ 
 				//initial get server request
-				received = dis.readUTF();
-                System.out.println(received);
+				do {
+					received = dis.readUTF();
+					System.out.println(received);
+				} while (dis.available() > 0);
                 String tosend = scn.nextLine(); 
                 dos.writeUTF(tosend); 
-                System.out.println("After first send");
-				// v This line should constantly read the server's output
-				while(dis.available() > 0) {
-                    System.out.println("Print all serve rhas");
-					received = dis.readUTF();
-					System.out.println(received);
-                }
-                while(dis.available() > 0) {
-                    System.out.println("Print all serve rhas");
-					received = dis.readUTF();
-					System.out.println(received);
-				}
-                if (dis.available() < 0) {
-                    tosend = scn.nextLine(); 
-                    dos.writeUTF(tosend); 
-                    // If client sends exit, close connection 
-				    if(tosend.equals("Exit")) 
-				    { 
-				    	System.out.println("Closing this connection : " + s); 
-				    	s.close(); 
-				    	System.out.println("Connection closed"); 
-				    	break; 
-			    	} 
-                }
+                // If client sends exit, close connection 
+				if(tosend.equals("Exit")) 
+			    { 
+			    	System.out.println("Closing this connection : " + s); 
+					s.close();
+					System.out.println("Connection closed"); 
+				    break; 
+			 	} 
 			} 
-		
 			// Close everything when done
 			scn.close(); 
 			dis.close(); 

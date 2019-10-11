@@ -18,9 +18,6 @@ public class chat_server
 		{ 
 			Socket s = null; 
 			System.out.println("Waiting for a client...");
-			/* **
-			** TODO: constantly loop through peer connection list to check for updates, when its different send it out
-			** */
 			try
 			{ 
 				if (listOfUsers.size() >= 100) {
@@ -128,6 +125,7 @@ class ClientHandler extends Thread
                                 if(e.getUserName().equalsIgnoreCase(targetUser)) {
                                     userFound = true;
                                     if (e.get_State().equalsIgnoreCase("free")) {
+										e.dos.flush();
                                         e.dos.writeUTF("Received request from " + userName +"\nConnect? 'y' or 'n'");
                                         //ask user to connect
                                         if(e.dis.readUTF().equalsIgnoreCase("y")) {
@@ -139,10 +137,11 @@ class ClientHandler extends Thread
                                             this.setState("busy");
                                             dos.writeUTF("You are connected to " + targetUser);
                                             this.chatRoom();
-                                        }
+										}
                                     }else {
                                         dos.writeUTF("User is busy.");
-                                    }
+									}
+									break;
                                 } 
                             }
                             dos.writeUTF("User cannot be found");
