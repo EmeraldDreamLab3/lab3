@@ -14,14 +14,12 @@ public class Client
 				System.out.println("Client usage: java Client #IP_address #port_number");
 			}
 
-			Scanner scn = new Scanner(System.in); 
-			
 			// This is the Ip the cleint is connecting to
-			InetAddress ip = InetAddress.getByName(args[0]); 
+			String ip = args[0]; 
 			int port = Integer.parseInt(args[1]);
 			//Establish Socket
 			Socket s = new Socket(ip, port); 
-	
+			Scanner scn = new Scanner(System.in); 
 			// Input and Outputstream of the socket
 			DataInputStream dis = new DataInputStream(s.getInputStream()); 
 			DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
