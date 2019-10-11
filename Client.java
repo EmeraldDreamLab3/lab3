@@ -11,47 +11,39 @@ public class Client
 		{ 
 			Scanner scn = new Scanner(System.in); 
 			
-			// This is the Ip the cleint is connecting to
+			// This is the Ip the client is connecting to
 			InetAddress ip = InetAddress.getByName("localhost"); 
 	
 			//Establish Socket
-			Socket s = new Socket(ip, 5056); 
+			Socket s = new Socket(ip, 5000); 
 	
 			// Input and Outputstream of the socket
 			DataInputStream dis = new DataInputStream(s.getInputStream()); 
 			DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
 			String received;
-			// System.out.println("[TRY]");
 			// Communicating to server from client
 			while (true) 
 			{ 
-				//initial get server request
-				received = dis.readUTF();
-				System.out.println(received);
 				// v This line should constantly read the server's output
-				while(dis.available() > 0) {
-					received = dis.readUTF();
-					System.out.println(received);
-				}
+				received = dis.readUTF();
+				System.out.println(received); 
 				String tosend = scn.nextLine(); 
 				dos.writeUTF(tosend); 
-				
-				// System.out.println("[WHILE]");
+
 				// If client sends exit, close connection 
 				if(tosend.equals("Exit")) 
 				{ 
 					System.out.println("Closing this connection : " + s); 
 					s.close(); 
 					System.out.println("Connection closed"); 
-					// System.out.println("[EXIT]");
-
 					break; 
 				} 
 				
-				/* NOTICE ME ALEXXXXXXXXXXXXXXXXXXXXXXX */
-				/* Needs a line that lets user type again to server!!!!!! */
+				// v So the line is updated, so reread 
+				received = dis.readUTF(); 
+				System.out.println(received); 
+
 			} 
-			// System.out.println("[OUT TRUE]");
 
 			
 			// Close everything when done
