@@ -9,8 +9,18 @@ public class Server
 	final static int MAX_CLIENTS = 100;
 	public static void main(String[] args) throws IOException 
 	{ 
+		if (args.length < 1) {
+			System.out.println("Server usage: java Server #port_number");
+		}
+
 		// Port the server is listening to 
-		ServerSocket ss = new ServerSocket(5056); 
+		int port = args[0];
+		try {
+			ServerSocket ss = new ServerSocket(port); 
+		} catch (Exception e) {
+			System.out.println("Error in port");
+		}
+		
 		System.out.println("Server started...");
 		// List of users
 

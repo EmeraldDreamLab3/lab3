@@ -9,13 +9,18 @@ public class Client
 	{ 
 		try
 		{ 
+			// Make sure arguments are passed
+			if (args.length < 2) {
+				System.out.println("Client usage: java Client #IP_address #port_number");
+			}
+
 			Scanner scn = new Scanner(System.in); 
 			
 			// This is the Ip the cleint is connecting to
-			InetAddress ip = InetAddress.getByName("localhost"); 
-	
+			InetAddress ip = args[0]; 
+			int port = args[1];
 			//Establish Socket
-			Socket s = new Socket(ip, 5056); 
+			Socket s = new Socket(ip, port); 
 	
 			// Input and Outputstream of the socket
 			DataInputStream dis = new DataInputStream(s.getInputStream()); 
