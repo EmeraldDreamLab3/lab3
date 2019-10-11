@@ -14,13 +14,14 @@ public class Server
 		}
 
 		// Port the server is listening to 
-		int port = args[0];
+		int port = Integer.parseInt(args[0]);
+		ServerSocket ss = null;
 		try {
-			ServerSocket ss = new ServerSocket(port); 
+			ss = new ServerSocket(port); 
 		} catch (Exception e) {
 			System.out.println("Error in port");
 		}
-		
+
 		System.out.println("Server started...");
 		// List of users
 

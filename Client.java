@@ -17,8 +17,8 @@ public class Client
 			Scanner scn = new Scanner(System.in); 
 			
 			// This is the Ip the cleint is connecting to
-			InetAddress ip = args[0]; 
-			int port = args[1];
+			InetAddress ip = InetAddress.getByName(args[0]); 
+			int port = Integer.parseInt(args[1]);
 			//Establish Socket
 			Socket s = new Socket(ip, port); 
 	
