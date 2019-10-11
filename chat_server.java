@@ -9,7 +9,19 @@ public class chat_server
 	final static int MAX_CLIENTS = 100;
 	public static void main(String[] args) throws IOException 
 	{ 
-		ServerSocket ss = new ServerSocket(5056); 
+		if (args.length < 1) {
+			System.out.println("Server usage: java Server #port_number");
+		}
+
+		// Port the server is listening to 
+		int port = Integer.parseInt(args[0]);
+		ServerSocket ss = null;
+		try {
+			ss = new ServerSocket(port); 
+		} catch (Exception e) {
+			System.out.println("Error in port");
+		}
+		
 		System.out.println("Server started...");
         listOfUsers = new ArrayList<ClientHandler>(MAX_CLIENTS);
         

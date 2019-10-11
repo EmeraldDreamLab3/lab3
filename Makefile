@@ -1,14 +1,14 @@
 # Makefile for JAVA network programs
 
-default: Server.class Client.class
+default: chat_server.class chat_client.class
 
-# Server
-Server.class: Server.java
-	javac Server.java
+# chat_chat_server
+chat_server.class: chat_server.java
+	javac chat_server.java
 
-# Client
-Client.class: Client.java
-	javac Client.java
+# chat_client
+chat_client.class: chat_client.java
+	javac chat_client.java
 
 clean:
 	rm -rf *.class \
